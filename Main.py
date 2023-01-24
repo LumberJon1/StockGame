@@ -49,7 +49,36 @@ global_stocks = [
 
 def prompt_user():
     # Do things
-    prompt = ""
+    choosing = True
+    
+    while choosing:
+        prompt = "\nType which action you would like to perform: \n _ _ Buy _ _ _ Sell _ _ _ Wait _ _ _ Holdings _ _ _ Quit _ _"
+        print(prompt+"\n")
+        # Check for a valid input
+        user_choice = input()
+        if (user_choice.title() == "Buy"):
+            print("Choose a stock to buy")
+            choosing = False
+            
+        elif (user_choice.title() == "Sell"):
+            print("Choose a holding to sell")
+            choosing = False
+        
+        elif (user_choice.title() == "Wait"):
+            print("No action taken.  Progressing to the next trading day...")
+            choosing = False
+            
+        elif (user_choice.title() == "Holdings"):
+            print("Showing your current holdings...")
+            choosing = False
+            
+        elif (user_choice.title() == "Quit"):
+            print("Cashing out holdings.  Your final score is xyz.")
+            
+        else:
+            print("Not a valid choice.\n")
+        
+    
     
 def adjust_balance():
     print("New balance")
@@ -65,5 +94,10 @@ def sell_stock(stock):
 
 def change_prices():
     print("new trading day")
+    
+    
+# ---------- Testbed ----------
+
+prompt_user()
     
     
