@@ -78,14 +78,49 @@ def prompt_user():
         else:
             print("Not a valid choice.\n")
         
-    
+
+
+def calculate_portfolio_value():
+    sum_total = 0
+    for holding in holdings:
+        sum_total += (holding["price"] * holding["shares"])
+
+    # print("Portfolio value: $"+str(sum_total))
+    return sum_total
+
     
 def adjust_balance():
-    print("New balance")
+    print("Beginning balance: "+str(calculate_portfolio_value()))
+    # Find which holdings the player has
+    
+    # Find the matching holdings in the global_stocks array
+    
+    # Grab the prices for those stocks and use them to update the prices (but not shares) of the holdings
+    
+    # Return the updated calculate_portfolio_value() function result
     
     
-def buy_stock(stock):
-    print("Bought "+stock)
+def buy_stock(ticker, shares, price):
+    # NOTE: This function will not handle prompts.  It is simply called once validation of eligible
+    # purchase and quantity have been validated
+    print("\nBuying "+str(shares)+" shares of "+ticker+" at $"+str(price)+"...")
+    
+    # Check to see whether the stock is in the player's holdings
+    global cash_balance
+    
+    for item in holdings:
+        if (ticker in item["ticker"]):
+            print("You own "+str(item["shares"])+" shares of this stock.")
+            item["shares"] += shares
+            print("Added "+str(shares)+".  New shares = "+str(item["shares"]))
+            cash_balance -= (price * shares)
+            print("New cash balance: $"+str(cash_balance))
+            return        
+        
+    print("New stock.")
+    holdings.append({"ticker": ticker, "shares": shares, "price": price})
+    cash_balance -= (price * shares)
+    print("New cash balance: $"+str(cash_balance))
     
     
 def sell_stock(stock):
@@ -111,6 +146,7 @@ def change_prices(days=1):
     
 # ---------- Testbed ----------
 
-change_prices(5)
-    
+holdings.append({"ticker": "BBB", "shares": 5, "price": 55.27})
+print(holdings)
+buy_stock("BBB", 1, 100)
     
