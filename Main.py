@@ -25,3 +25,45 @@ import random
 
 # ---------- Main Code ----------
 
+# User data
+cash_balance = 5000
+holdings = []
+# Holdings will be dictionaries to include {"ticker": "", "shares": 0, "price": 0}
+portfolio_value = 0
+
+global_turn_counter = 0
+
+global_stocks = [
+    {"ticker": "AAA", "price": 10, "volatility": 1.8},
+    {"ticker": "BBB", "price": 20, "volatility": 1.7},
+    {"ticker": "CCC", "price": 30, "volatility": 1.6},
+    {"ticker": "DDD", "price": 40, "volatility": 1.5},
+    {"ticker": "EEE", "price": 50, "volatility": 1.4},
+    {"ticker": "FFF", "price": 60, "volatility": 1.3},
+    {"ticker": "GGG", "price": 70, "volatility": 1.2},
+    {"ticker": "HHH", "price": 80, "volatility": 1.1},
+    {"ticker": "III", "price": 90, "volatility": 1}
+]
+
+# TODO: Randomly seed the initial prices and volatilities with new starting values for each game
+
+def prompt_user():
+    # Do things
+    prompt = ""
+    
+def adjust_balance():
+    print("New balance")
+    
+    
+def buy_stock(stock):
+    print("Bought "+stock)
+    
+    
+def sell_stock(stock):
+    print("sold "+stock)
+    
+
+def change_prices():
+    print("new trading day")
+    
+    
