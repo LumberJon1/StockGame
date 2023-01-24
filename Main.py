@@ -92,12 +92,25 @@ def sell_stock(stock):
     print("sold "+stock)
     
 
-def change_prices():
-    print("new trading day")
-    
+def change_prices(days=1):
+    for iteration in range(days):
+        print("\nnew trading day")
+        print("iteration "+str(iteration)+"...")
+        for stock in global_stocks:
+            move_direction = random.choice(["Up", "Down"])
+            # Adjust the stock price by a maximum of 20% multiplied by the volatility and round to 2 places
+            move_amount = round(random.uniform(0, (stock["price"] * 0.2) * stock["volatility"]), 2)
+            if (move_direction == "Up"):
+                stock["price"] += round(move_amount, 2)
+            else:
+                stock["price"] -= round(move_amount, 2)
+            
+            print("Adjusting "+stock["ticker"]+" "+move_direction+" by $"+str(move_amount)+" to $"+str(round(stock["price"], 2)))
+        
+        print(global_stocks)
     
 # ---------- Testbed ----------
 
-prompt_user()
+change_prices(5)
     
     
