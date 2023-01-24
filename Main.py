@@ -60,20 +60,45 @@ def prompt_user():
             print("Choose a stock to buy")
             choosing = False
             
+            # Validate another input to decide which stock to buy, or back out to the prior loop
+            
+            # Ensure the stock is a valid choice, and then prompt for the number of shares
+            
+            # The number of shares must be a positive nonzero integer and cannot contain other chars.
+            
+            # Validate whether the user has enough cash on hand to make that purchase
+            
         elif (user_choice.title() == "Sell"):
             print("Choose a holding to sell")
             choosing = False
+            
+            # Validate that the choice is contained in the user's holdings
+            
+            # Prompt for a number of shares to sell at the market price
+            
+            # Validate that the input was a nonzero integer and did not contain disallowed chars
+            
+            # Cast to int
+            
+            # Validate that the user has at least that number of shares
+            
+            # Package the validated input and send as an argument to the sell_stock() function
         
         elif (user_choice.title() == "Wait"):
             print("No action taken.  Progressing to the next trading day...")
             choosing = False
             
+            # Call the change_prices() function and return the prompt recursively
+            change_prices()
+            prompt_user()
+            
         elif (user_choice.title() == "Holdings"):
             print("Showing your current holdings...")
-            choosing = False
+            print(holdings)            
             
         elif (user_choice.title() == "Quit"):
-            print("Cashing out holdings.  Your final score is xyz.")
+            score = calculate_portfolio_value()
+            print("Cashing out holdings.  Your final score is $"+score)
             
         else:
             print("Not a valid choice.\n")
@@ -86,6 +111,7 @@ def calculate_portfolio_value():
         sum_total += (holding["price"] * holding["shares"])
 
     # print("Portfolio value: $"+str(sum_total))
+    sum_total += cash_balance
     return sum_total
 
     
