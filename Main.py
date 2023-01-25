@@ -61,7 +61,53 @@ def prompt_user():
             choosing = False
             
             # Validate another input to decide which stock to buy, or back out to the prior loop
+            print("\nNow in the choice loop")
             
+            choosing_stock = True
+            while choosing_stock:
+                valid_tickers = []
+                print("\nType one of the tickers to buy.  Type \"Back\" to go back.")
+                for stock in global_stocks:
+                    print(stock["ticker"]+": $"+str(stock["price"]))
+                    valid_tickers.append(stock["ticker"])
+                print("\n")
+                
+                ticker_choice = input()
+                if (ticker_choice.title() == "Back"):
+                    choosing_stock = False
+                    prompt_user()
+                    
+                elif ticker_choice.upper() in valid_tickers:
+                    
+                    # Enter into quantity loop
+                    selecting_quantity = True
+                    while selecting_quantity:
+                        global cash_balance
+                        
+                        print("\nChose "+ticker_choice.upper())
+                        print("\nChoose number of shares to buy.")
+                        
+                        current_price = 0
+                        for stock in global_stocks:
+                            if (ticker_choice.upper() == stock["ticker"]):
+                                current_price = stock["price"]
+                        print("\nPurchase price: $"+str(round(current_price, 2)))
+                        print("\n(cash available: $"+str(cash_balance)+")")
+                        
+                        quantity_choice = input()
+                        # Check that the input quantity of shares is a positive integer > 0
+                        if (int(quantity_choice) > 0) and (float(quantity_choice).is_integer()):
+                            if (int(quantity_choice) * current_price <= cash_balance):
+                                buy_stock(ticker_choice.upper(), quantity_choice, current_price)
+                                return
+                            else:
+                                print("\n"+quantity_choice+" shares at $"+str(current_price)+" exceeds cash balance of $"+str(round(cash_balance, 2)))
+                        else:
+                            print("\n"+quantity_choice+" is not a valid quantity of shares.")
+                            print("Enter a nonzero whole integer (i.e. 5, not 5.1)")
+                else:
+                    print("\nPlease type a valid ticker symbol.")                    
+    
             # Ensure the stock is a valid choice, and then prompt for the number of shares
             
             # The number of shares must be a positive nonzero integer and cannot contain other chars.
@@ -145,7 +191,7 @@ def buy_stock(ticker, shares, price):
         
     print("New stock.")
     holdings.append({"ticker": ticker, "shares": shares, "price": price})
-    cash_balance -= (price * shares)
+    cash_balance -= (price * int(shares))
     print("New cash balance: $"+str(cash_balance))
     
     
@@ -166,13 +212,12 @@ def change_prices(days=1):
             else:
                 stock["price"] -= round(move_amount, 2)
             
-            print("Adjusting "+stock["ticker"]+" "+move_direction+" by $"+str(move_amount)+" to $"+str(round(stock["price"], 2)))
+            # print("Adjusting "+stock["ticker"]+" "+move_direction+" by $"+str(move_amount)+" to $"+str(round(stock["price"], 2)))
         
-        print(global_stocks)
+        for stock in global_stocks:
+            print(stock["ticker"]+": $"+str(stock["price"])+"  - Volatility: "+str(stock["volatility"]))
     
 # ---------- Testbed ----------
 
-holdings.append({"ticker": "BBB", "shares": 5, "price": 55.27})
-print(holdings)
-buy_stock("BBB", 1, 100)
+prompt_user()
     
