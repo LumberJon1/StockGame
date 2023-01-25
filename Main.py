@@ -52,7 +52,7 @@ def prompt_user():
     choosing = True
     
     while choosing:
-        prompt = "\nType which action you would like to perform: \n _ _ Buy _ _ _ Sell _ _ _ Wait _ _ _ Holdings _ _ _ Quit _ _"
+        prompt = "\nType which action you would like to perform: \n _ _ Buy _ _ _ Sell _ _ _ Wait _ _ _ Holdings _ _ _ Prices _ _ _ Quit _ _"
         print(prompt+"\n")
         # Check for a valid input
         user_choice = input()
@@ -99,7 +99,12 @@ def prompt_user():
                         if (int(quantity_choice) > 0) and (float(quantity_choice).is_integer()):
                             if (int(quantity_choice) * current_price <= cash_balance):
                                 buy_stock(ticker_choice.upper(), quantity_choice, current_price)
-                                return
+                                
+                                # Progress the prices and run the main prompt again
+                                selecting_quantity = False
+                                choosing_stock = False
+                                change_prices()
+                                prompt_user()
                             else:
                                 print("\n"+quantity_choice+" shares at $"+str(current_price)+" exceeds cash balance of $"+str(round(cash_balance, 2)))
                         else:
@@ -117,6 +122,9 @@ def prompt_user():
         elif (user_choice.title() == "Sell"):
             print("Choose a holding to sell")
             choosing = False
+            
+            for stock in holdings:
+                print(" _ _ "+stock["ticker"]+" _ ", end=" ")
             
             # Validate that the choice is contained in the user's holdings
             
@@ -139,8 +147,26 @@ def prompt_user():
             prompt_user()
             
         elif (user_choice.title() == "Holdings"):
-            print("Showing your current holdings...")
-            print(holdings)            
+            print("\nYour portfolio has the following assets:")
+            
+            # variable to store portfolio balance
+            portfolio_total = 0
+            
+            for stock in holdings:
+                print(stock["ticker"]+": "+str(stock["shares"])+" shares at $"+str(stock["price"]))
+                portfolio_total += (stock["price"] * int(stock["shares"]))
+
+            print("\nTotal invested balance: $"+str(portfolio_total))
+            print("You also have an uninvested cash balance remaining of $"+str(cash_balance))
+            
+            print("\nYour total portfolio value is $"+str(calculate_portfolio_value()))
+            
+        elif (user_choice.title() == "Prices"):
+            for stock in global_stocks:
+                print(stock["ticker"]+" $"+str(stock["price"])+"  \u03C3 "+str(stock["volatility"]))
+                print("----------------")
+                
+                # TODO: Show direction of movement since last price
             
         elif (user_choice.title() == "Quit"):
             score = calculate_portfolio_value()
@@ -154,7 +180,7 @@ def prompt_user():
 def calculate_portfolio_value():
     sum_total = 0
     for holding in holdings:
-        sum_total += (holding["price"] * holding["shares"])
+        sum_total += (float(holding["price"]) * holding["shares"])
 
     # print("Portfolio value: $"+str(sum_total))
     sum_total += cash_balance
@@ -164,12 +190,11 @@ def calculate_portfolio_value():
 def adjust_balance():
     print("Beginning balance: "+str(calculate_portfolio_value()))
     # Find which holdings the player has
-    
-    # Find the matching holdings in the global_stocks array
-    
-    # Grab the prices for those stocks and use them to update the prices (but not shares) of the holdings
-    
-    # Return the updated calculate_portfolio_value() function result
+    for stock in global_stocks:
+        for holding in holdings:
+        # Find the matching holdings in the global_stocks array
+            if (stock["ticker"] == holding["ticker"]):
+                holding["price"] = stock["price"]
     
     
 def buy_stock(ticker, shares, price):
@@ -190,12 +215,28 @@ def buy_stock(ticker, shares, price):
             return        
         
     print("New stock.")
-    holdings.append({"ticker": ticker, "shares": shares, "price": price})
+    holdings.append({"ticker": ticker, "shares": int(shares), "price": float(round(price, 2))})
     cash_balance -= (price * int(shares))
     print("New cash balance: $"+str(cash_balance))
     
     
-def sell_stock(stock):
+def sell_stock(ticker, shares, price):
+    # This function will assume that the arguments have been validated.
+    
+    global cash_balance
+    price = 0
+    
+    for item in holdings:
+        if (ticker in item["ticker"]):
+            item["shares"] -= shares
+            
+    # Determine appropriate proceeds
+    for stock in global_stocks:
+        if (stock["ticker"] == ticker):
+            price = stock["price"]
+            
+    # Add the proceeds to the cash balance
+    cash_balance += (price * shares)
     print("sold "+stock)
     
 
@@ -206,7 +247,7 @@ def change_prices(days=1):
         for stock in global_stocks:
             move_direction = random.choice(["Up", "Down"])
             # Adjust the stock price by a maximum of 20% multiplied by the volatility and round to 2 places
-            move_amount = round(random.uniform(0, (stock["price"] * 0.2) * stock["volatility"]), 2)
+            move_amount = round(random.uniform(0, ((stock["price"] * 0.2) * stock["volatility"])), 2)
             if (move_direction == "Up"):
                 stock["price"] += round(move_amount, 2)
             else:
@@ -214,8 +255,11 @@ def change_prices(days=1):
             
             # print("Adjusting "+stock["ticker"]+" "+move_direction+" by $"+str(move_amount)+" to $"+str(round(stock["price"], 2)))
         
+        # Adjust the player's portfolio balance with the updated prices
+        adjust_balance()
+        
         for stock in global_stocks:
-            print(stock["ticker"]+": $"+str(stock["price"])+"  - Volatility: "+str(stock["volatility"]))
+            print(stock["ticker"]+": $"+str(round(stock["price"], 2))+"  - Volatility: "+str(stock["volatility"]))
     
 # ---------- Testbed ----------
 
