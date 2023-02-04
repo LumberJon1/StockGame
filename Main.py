@@ -129,10 +129,31 @@ def prompt_user():
             print("Choose a holding to sell")
             choosing = False
             
+            # Array to hold useful info like available tickers and related prices and shares
+            available_tickers = []
+            available_shares = []
+            available_prices = []
+            
             for stock in holdings:
                 print(" _ _ "+stock["ticker"]+" _ ", end=" ")
+                available_tickers.append(stock["ticker"])
+                available_shares.append(stock["shares"])
+                available_prices.append(stock["price"])
             
             # Validate that the choice is contained in the user's holdings
+            selling = True
+            while selling:
+                
+                user_choice = input()
+                if (user_choice.upper() not in available_tickers):
+                    print("\nPlease choose a valid holding to sell.")
+                    break 
+                else:
+                    choice_index = available_tickers.index(user_choice.upper())
+                    print("You chose to sell "+user_choice.upper())
+                    print("\nYou have "+str(available_shares[choice_index])+" shares of "+user_choice.upper()+" available to sell at $"+str(available_prices[choice_index])+" per share.")
+                    
+                    
             
             # Prompt for a number of shares to sell at the market price
             
