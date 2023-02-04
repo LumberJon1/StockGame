@@ -31,7 +31,10 @@ holdings = []
 # Holdings will be dictionaries to include {"ticker": "", "shares": 0, "price": 0}
 portfolio_value = 0
 
+# Other Globals
 global_turn_counter = 0
+
+global_trend = 0.6
 
 global_stocks = [
     {"ticker": "AAA", "price": 10, "volatility": 1.8},
@@ -44,6 +47,9 @@ global_stocks = [
     {"ticker": "HHH", "price": 80, "volatility": 1.1},
     {"ticker": "III", "price": 90, "volatility": 1}
 ]
+
+# TODO: Add arrays to track historical data so it can be charted and displayed
+
 
 # TODO: Randomly seed the initial prices and volatilities with new starting values for each game
 
@@ -170,7 +176,7 @@ def prompt_user():
             
         elif (user_choice.title() == "Quit"):
             score = calculate_portfolio_value()
-            print("Cashing out holdings.  Your final score is $"+score)
+            print("Cashing out holdings.  Your final score is $"+str(score))
             
         else:
             print("Not a valid choice.\n")
@@ -245,7 +251,13 @@ def change_prices(days=1):
         print("\nnew trading day")
         print("iteration "+str(iteration)+"...")
         for stock in global_stocks:
-            move_direction = random.choice(["Up", "Down"])
+            # Take the global trend value and use it to determine movement direction
+            global global_trend
+            move_direction = random.uniform(0, 1)
+            if (move_direction < global_trend):
+                move_direction = "Up"
+            else:
+                move_direction = "Down"
             # Adjust the stock price by a maximum of 20% multiplied by the volatility and round to 2 places
             move_amount = round(random.uniform(0, ((stock["price"] * 0.2) * stock["volatility"])), 2)
             if (move_direction == "Up"):
