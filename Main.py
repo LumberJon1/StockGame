@@ -26,9 +26,10 @@ import random
 # ---------- Main Code ----------
 
 # User data
-cash_balance = 5000
 holdings = []
 # Holdings will be dictionaries to include {"ticker": "", "shares": 0, "price": 0}
+cash_balance = 5000
+investments_value = 0
 portfolio_value = 0
 
 # Other Globals
@@ -49,9 +50,18 @@ global_stocks = [
 ]
 
 # TODO: Add arrays to track historical data so it can be charted and displayed
+# Historical data will be an array of values ordered [cash balance, investment balance, total value]
+historical_data = []
+
+# Historical prices will be an array of solely the prices of each stock in order
+historical_prices = []
 
 
 # TODO: Randomly seed the initial prices and volatilities with new starting values for each game
+def seed_start():
+    for stock in global_stocks:
+        stock["price"] = round(random.uniform(0, 100), 2)
+        stock["volatility"] = round(random.uniform(0.1, 3.6), 1)
 
 def prompt_user():
     # Do things
@@ -118,12 +128,7 @@ def prompt_user():
                             print("Enter a nonzero whole integer (i.e. 5, not 5.1)")
                 else:
                     print("\nPlease type a valid ticker symbol.")                    
-    
-            # Ensure the stock is a valid choice, and then prompt for the number of shares
-            
-            # The number of shares must be a positive nonzero integer and cannot contain other chars.
-            
-            # Validate whether the user has enough cash on hand to make that purchase
+
             
         elif (user_choice.title() == "Sell"):
             print("Choose a holding to sell")
@@ -180,14 +185,6 @@ def prompt_user():
                         else:
                             print("\nPlease select a share quantity in whole shares.")
                                 
-            
-            # Validate that the input was a nonzero integer and did not contain disallowed chars
-            
-            # Cast to int
-            
-            # Validate that the user has at least that number of shares
-            
-            # Package the validated input and send as an argument to the sell_stock() function
         
         elif (user_choice.title() == "Wait"):
             print("No action taken.  Progressing to the next trading day...")
@@ -234,18 +231,37 @@ def calculate_portfolio_value():
         sum_total += (float(holding["price"]) * holding["shares"])
 
     # print("Portfolio value: $"+str(sum_total))
+    investments_value = sum_total
     sum_total += cash_balance
+    portfolio_value = sum_total
     return sum_total
 
     
 def adjust_balance():
     print("Beginning balance: "+str(calculate_portfolio_value()))
     # Find which holdings the player has
+    
+    inv_total = 0
+    
     for stock in global_stocks:
         for holding in holdings:
         # Find the matching holdings in the global_stocks array
             if (stock["ticker"] == holding["ticker"]):
                 holding["price"] = stock["price"]
+                investment_value = holding["price"] * holding["shares"]
+                print("total value of holding "+holding["ticker"]+": $"+str(investment_value)+" ("+str(holding["shares"])+" shares at $"+str(round(holding["price"], 2)))
+                inv_total += investment_value
+                
+    # Store the summed totals of portfolio investments to add to investments_value
+    print("investments total value: $"+str(round(inv_total, 2)))
+    investments_value = inv_total
+    print("Cash balance: $"+str(round(cash_balance, 2)))
+    portfolio_value = cash_balance + investments_value
+    print("Total portfolio value: $"+str(round(portfolio_value, 2)))
+                
+    # Push the updated balances to the global array of historical data
+    historical_data.append([cash_balance, investments_value, portfolio_value])
+
     
     
 def buy_stock(ticker, shares, price):
@@ -295,6 +311,10 @@ def change_prices(days=1):
     for iteration in range(days):
         print("\nnew trading day")
         print("iteration "+str(iteration)+"...")
+        
+        # Local array to push to the global historical prices array once done
+        local_prices = []
+        
         for stock in global_stocks:
             # Take the global trend value and use it to determine movement direction
             global global_trend
@@ -310,15 +330,20 @@ def change_prices(days=1):
             else:
                 stock["price"] -= round(move_amount, 2)
             
-            # print("Adjusting "+stock["ticker"]+" "+move_direction+" by $"+str(move_amount)+" to $"+str(round(stock["price"], 2)))
+            # Append the stock price to the local prices array so it can be then sent to the global historical prices array
+            local_prices.append(round(stock["price"], 2))
         
         # Adjust the player's portfolio balance with the updated prices
         adjust_balance()
         
         for stock in global_stocks:
             print(stock["ticker"]+": $"+str(round(stock["price"], 2))+"  - Volatility: "+str(stock["volatility"]))
+            
+        # Push to global historical prices
+        historical_prices.append(local_prices)
     
 # ---------- Testbed ----------
 
+seed_start()
 prompt_user()
     
