@@ -147,15 +147,39 @@ def prompt_user():
                 user_choice = input()
                 if (user_choice.upper() not in available_tickers):
                     print("\nPlease choose a valid holding to sell.")
-                    break 
+                    
                 else:
                     choice_index = available_tickers.index(user_choice.upper())
                     print("You chose to sell "+user_choice.upper())
-                    print("\nYou have "+str(available_shares[choice_index])+" shares of "+user_choice.upper()+" available to sell at $"+str(available_prices[choice_index])+" per share.")
                     
-                    
-            
-            # Prompt for a number of shares to sell at the market price
+                    # Prompt for a number of shares to sell at the market price
+                    choosing_quantity_sold = True
+                    while choosing_quantity_sold:
+                        print("\nYou have "+str(available_shares[choice_index])+" shares of "+user_choice.upper()+" available to sell at $"+str(available_prices[choice_index])+" per share.")
+                        print("\nChoose a number of shares to sell (in whole share quantities)")
+                        quantity_choice = input()
+                        if (float(quantity_choice).is_integer()):
+                            if (int(quantity_choice) > 0 and int(quantity_choice) <= available_shares[choice_index]):
+                                # Validate for a non-negative, non-zero integer in whole shares
+                                    # Subtract the shares and add the proceeds to the balance of cash, then exit the loops
+                                    sale_total = 0
+                                    for item in holdings:
+                                        if (item["ticker"] == user_choice.upper()):
+                                            item["shares"] -= int(quantity_choice)
+                                            sale_total = int(quantity_choice) * item["price"]
+                                            cash_balance += sale_total
+                                            
+                                    # Display sales proceeds and updated balance
+                                    print("\nYou sold "+quantity_choice+" shares for total proceeds of $"+str(sale_total)+".")
+                                    selling = False
+                                    choosing_quantity_sold = False
+                                    choosing = True
+                                    break                                
+                            else:
+                                print(str(quantity_choice)+" is not a valid quantity of shares.")
+                        else:
+                            print("\nPlease select a share quantity in whole shares.")
+                                
             
             # Validate that the input was a nonzero integer and did not contain disallowed chars
             
